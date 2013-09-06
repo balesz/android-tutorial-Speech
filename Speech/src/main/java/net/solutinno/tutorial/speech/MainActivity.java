@@ -75,31 +75,15 @@ public class MainActivity extends ActionBarActivity implements Button.OnClickLis
         startActivityForResult(intent, 1);
     }
 
-
     private void getTTSlanguages() {
         Toast.makeText(this, "Text To Speech Languages", Toast.LENGTH_SHORT).show();
     }
     private void startTextToSpeech() {
-        final String url = String.format(translate_tts, "en_GB", mEditText.getText());
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    MediaPlayer player = new MediaPlayer();
-                    player.setDataSource(url);
-                    player.prepare();
-                    player.start();
-                }
-                catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
-        new Thread(run).start();
+        new Thread(mPlaySoundFromText).start();
     }
 
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle extras = getResultExtras(true);
@@ -107,6 +91,22 @@ public class MainActivity extends ActionBarActivity implements Button.OnClickLis
             if (extras.containsKey(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES)) {
                 ArrayList<String> languages = extras.getStringArrayList(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES);
                 setText(languages);
+            }
+        }
+    };
+
+    Runnable mPlaySoundFromText = new Runnable() {
+        @Override
+        public void run() {
+            final String url = String.format(translate_tts, "en_GB", mEditText.getText());
+            try{
+                MediaPlayer player = new MediaPlayer();
+                player.setDataSource(url);
+                player.prepare();
+                player.start();
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     };
