@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity implements Button.OnClickListener {
+
+    private static final String translate_tts = "http://translate.google.com/translate_tts?ie=UTF-8&tl=%s&q=%s";
 
     private EditText mEditText;
     private Button mButtonTextToSpeech;
@@ -77,7 +80,22 @@ public class MainActivity extends ActionBarActivity implements Button.OnClickLis
         Toast.makeText(this, "Text To Speech Languages", Toast.LENGTH_SHORT).show();
     }
     private void startTextToSpeech() {
-        Toast.makeText(this, "Text To Speech", Toast.LENGTH_SHORT).show();
+        final String url = String.format(translate_tts, "en_GB", mEditText.getText());
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    MediaPlayer player = new MediaPlayer();
+                    player.setDataSource(url);
+                    player.prepare();
+                    player.start();
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+        new Thread(run).start();
     }
 
 
